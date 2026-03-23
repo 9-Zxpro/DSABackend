@@ -30,7 +30,7 @@ FRONTEND_ORIGIN = os.getenv("FRONTEND_ORIGIN", "*")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[FRONTEND_ORIGIN, "http://localhost:3000", "http://127.0.0.1:5500"],
+    allow_origins=[FRONTEND_ORIGIN, "https://9-zxpro.github.io/DSATracking/", "http://127.0.0.1:5500"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
