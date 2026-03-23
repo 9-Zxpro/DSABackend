@@ -46,16 +46,27 @@ class BulkProgressUpdate(BaseModel):
 
 # ── Helpers ───────────────────────────────────────────────────
 def flatten_question(q: dict) -> dict:
-    """Merge the nested progress list into the question dict."""
-    prog = q.pop("progress", [])
+    """Merge the nested progress list or dict into the question dict."""
+    prog = q.pop("progress", None)
+    
+    # Set defaults first
+    q["status"] = "todo"
+    q["notes"]  = ""
+    q["updated_at"] = None
+    
     if prog:
-        q["status"] = prog[0].get("status", "todo")
-        q["notes"]  = prog[0].get("notes", "")
-        q["updated_at"] = prog[0].get("updated_at", None)
-    else:
-        q["status"] = "todo"
-        q["notes"]  = ""
-        q["updated_at"] = None
+        # If Supabase returns a list (1-to-many relationship)
+        if isinstance(prog, list) and len(prog) > 0:
+            q["status"] = prog[0].get("status", "todo")
+            q["notes"]  = prog[0].get("notes", "")
+            q["updated_at"] = prog[0].get("updated_at", None)
+            
+        # If Supabase returns a dictionary (1-to-1 relationship)
+        elif isinstance(prog, dict):
+            q["status"] = prog.get("status", "todo")
+            q["notes"]  = prog.get("notes", "")
+            q["updated_at"] = prog.get("updated_at", None)
+            
     return q
 
 # ── Routes ───────────────────────────────────────────────────
